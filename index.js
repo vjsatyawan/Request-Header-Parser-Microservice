@@ -9,10 +9,14 @@ app.use(express.static(__dirname + '/public'));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
-app.get('/', function(request, response) {
-  response.render('pages/index');
-});
-
+app.all('*', function (req, res) {
+    res.json({
+        ipaddress: req.headers['x-forwarded-for'] ||
+                   req.connection.remoteAddress,
+        language: req.headers["accept-language"].split(",")[0],
+        software: req.headers["user-agent"].match(/\((.*?)\)/)[1]
+    });
+})
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
 });
